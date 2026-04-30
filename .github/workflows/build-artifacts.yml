@@ -430,4 +430,4 @@ jobs:
         if: ${{ env.USE_ANYKERNEL3 == 'true' }}
         with:
           name: "${{ env.ANYKERNEL3_FILE }}"
-          path: AnyKernel3/*
+          path: ${{ env.ANYKERNEL3_FILE }}.zip
