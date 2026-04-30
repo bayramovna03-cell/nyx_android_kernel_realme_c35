@@ -77,6 +77,60 @@
 
 #include <trace/hooks/sys.h>
 
+#ifdef CONFIG_KSU_MANUAL_HOOK
+#define KSU_PRCTL_OPTION 0xDEADBEEF
+#define KSU_PRCTL_GET_VERSION 2
+#define KSU_VERSION_3_2_0 33129
+#define KSU_GET_INFO_FLAG_MANAGER (1U << 1)
+#define KSU_GET_INFO_FLAG_LATE_LOAD (1U << 2)
+#define KSU_PER_USER_RANGE 100000
+#define KSU_FIRST_APPLICATION_UID 10000
+#define KSU_LAST_APPLICATION_UID 19999
+
+extern int ksu_install_fd(void);
+extern bool ksu_late_loaded;
+extern uid_t ksu_manager_appid;
+
+static int ksu_handle_prctl_compat(int option, unsigned long arg2,
+				   unsigned long arg3, unsigned long arg4,
+				   unsigned long arg5)
+{
+	u32 version = KSU_VERSION_3_2_0;
+	u32 flags = 0;
+	u32 reply_ok = KSU_PRCTL_OPTION;
+	uid_t appid = current_uid().val % KSU_PER_USER_RANGE;
+
+	if (option != KSU_PRCTL_OPTION || arg2 != KSU_PRCTL_GET_VERSION)
+		return -EINVAL;
+
+	/*
+	 * KernelSU-Next 3.2.0 manager still probes legacy prctl before it can
+	 * discover the anonymous ioctl fd. Install that fd as a compatibility
+	 * bridge, then return the expected legacy version reply.
+	 */
+	ksu_install_fd();
+
+	if (ksu_manager_appid == (uid_t)-1 &&
+	    appid >= KSU_FIRST_APPLICATION_UID &&
+	    appid <= KSU_LAST_APPLICATION_UID)
+		ksu_manager_appid = appid;
+
+	if (ksu_manager_appid == appid)
+		flags |= KSU_GET_INFO_FLAG_MANAGER;
+	if (ksu_late_loaded)
+		flags |= KSU_GET_INFO_FLAG_LATE_LOAD;
+
+	if (arg3 && copy_to_user((void __user *)arg3, &version, sizeof(version)))
+		return -EFAULT;
+	if (arg4 && copy_to_user((void __user *)arg4, &flags, sizeof(flags)))
+		return -EFAULT;
+	if (arg5 && copy_to_user((void __user *)arg5, &reply_ok, sizeof(reply_ok)))
+		return -EFAULT;
+
+	return 0;
+}
+#endif
+
 #ifndef SET_UNALIGN_CTL
 # define SET_UNALIGN_CTL(a, b)	(-EINVAL)
 #endif
@@ -2419,6 +2473,14 @@ SYSCALL_DEFINE5(prctl, int, option, unsigned long, arg2, unsigned long, arg3,
 	struct task_struct *me = current;
 	unsigned char comm[sizeof(me->comm)];
 	long error;
+
+#ifdef CONFIG_KSU_MANUAL_HOOK
+	if (option == KSU_PRCTL_OPTION) {
+		error = ksu_handle_prctl_compat(option, arg2, arg3, arg4, arg5);
+		if (!error)
+			return 0;
+	}
+#endif
 
 	error = security_task_prctl(option, arg2, arg3, arg4, arg5);
 	if (error != -ENOSYS)
