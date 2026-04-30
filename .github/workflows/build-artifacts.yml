@@ -370,8 +370,8 @@ jobs:
         env:
           ARCH: ${{ steps.generate-args.outputs.ARCH }}
         with:
-          name: ${{ env.KERNEL_NAME }}-${{ env.BUILD_DATE }}-${{ env.BUILD_DATE }}-dtbo.img
-          path: ${{ github.workspace }}/tmp/${{ env.KERNEL_NAME }}-dtbo.img
+          name: ${{ env.KERNEL_NAME }}-${{ env.BUILD_DATE }}-dtbo.img
+          path: ${{ github.workspace }}/tmp/${{ env.KERNEL_NAME }}-${{ env.BUILD_DATE }}-dtbo.img
           if-no-files-found: ignore
           retention-days: 7
 

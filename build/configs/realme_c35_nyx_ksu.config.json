@@ -2,7 +2,7 @@
     {
         "kernelSource": {
             "name": "realme_c35_nyx_ksu",
-            "repo": "https://github.com/dura4ok1338-dotcom/nyx_android_kernel_realme_c35",
+            "repo": "https://github.com/bayramovna03-cell/nyx_android_kernel_realme_c35",
             "branch": "dev",
             "device": "realme_c35",
             "defconfig": "realme_c35_nyx_ksu_defconfig"
