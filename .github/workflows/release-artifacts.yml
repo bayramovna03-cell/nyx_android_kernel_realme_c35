@@ -23,7 +23,7 @@ jobs:
         id: generate-matrix
         run: |
           echo "CONFIGS<<EOF" >> $GITHUB_OUTPUT
-          jq -s '[.[][]]' build/configs/*.config.json >> $GITHUB_OUTPUT
+          jq -s '[.[][]]' build/configs/realme_c35_nyx_ksu.config.json >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       # Set compile time.
@@ -235,12 +235,15 @@ jobs:
             if [ -d "./KernelSU" ]; then
               rm -rf "./KernelSU"
             fi
+            if [ -d "./KernelSU-Next" ]; then
+              rm -rf "./KernelSU-Next"
+            fi
             if [ -d "./drivers/kernelsu" ]; then
               rm -rf "./drivers/kernelsu"
             fi
 
             # Apply new KernelSU patches
-            curl -LSs "https://raw.githubusercontent.com/$KERNELSU_USER/$KERNELSU_REPO/$KERNELSU_BRANCH/kernel/setup.sh" | bash -s $KERNELSU_BRANCH
+            curl -fLSs "https://raw.githubusercontent.com/$KERNELSU_USER/$KERNELSU_REPO/$KERNELSU_BRANCH/kernel/setup.sh" | bash -s "$KERNELSU_BRANCH"
 
           else
         
@@ -248,12 +251,15 @@ jobs:
           if [ -d "./KernelSU" ]; then
             rm -rf "./KernelSU"
           fi
+          if [ -d "./KernelSU-Next" ]; then
+            rm -rf "./KernelSU-Next"
+          fi
           if [ -d "./drivers/kernelsu" ]; then
             rm -rf "./drivers/kernelsu"
           fi
 
           # Apply new KernelSU patches
-          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
+          curl -fLSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
 
           fi
 

@@ -2,7 +2,7 @@
     {
         "kernelSource": {
             "name": "realme_c35_nyx_ksu",
-            "repo": "https://github.com/rifsxd/nyx_android_kernel_realme_c35",
+            "repo": "https://github.com/dura4ok1338-dotcom/nyx_android_kernel_realme_c35",
             "branch": "dev",
             "device": "realme_c35",
             "defconfig": "realme_c35_nyx_ksu_defconfig"
@@ -67,8 +67,8 @@
         "KernelSU": {
             "enable": true,
             "custom": {
-                "user": "rifsxd",
-                "branch": "next",
+                "user": "KernelSU-Next",
+                "branch": "v3.2.0-legacy",
                 "repo": "KernelSU-Next"
             }
         }

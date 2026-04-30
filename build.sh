@@ -35,7 +35,7 @@ case "$1" in
         eval "rm -rf out kernel_log.log"
         ;;
     kernelsu)
-        eval "curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -s next-susfs-5.4"
+        eval "curl -fLSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/v3.2.0-legacy/kernel/setup.sh" | bash -s v3.2.0-legacy"
         ;;
     config-stock)
         eval "$base_command realme_c35_nyx_defconfig"
